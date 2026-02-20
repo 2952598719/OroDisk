@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.orosirian.orodisk.mappers.FileMapper">
+
+    <resultMap id="BaseResultMap" type="top.orosirian.orodisk.model.entity.FileEntity">
+        <id column="file_id" property="fileId"/>
+        <result column="user_id" property="userId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="storage_id" property="storageId"/>
+        <result column="file_name" property="fileName"/>
+        <result column="file_type" property="fileType"/>
+        <result column="file_size" property="fileSize"/>
+        <result column="status" property="status"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        file_id, user_id, parent_id, storage_id, file_name, file_type, file_size, status, created_time, updated_time
+    </sql>
+
+    <insert id="insert" parameterType="top.orosirian.orodisk.model.entity.FileEntity" useGeneratedKeys="true" keyProperty="fileId">
+        INSERT
+        INTO file (user_id, parent_id, storage_id, file_name, file_type, file_size, status)
+        VALUES (#{userId}, #{parentId}, #{storageId}, #{fileName}, #{fileType}, #{fileSize}, #{status})
+    </insert>
+
+    <update id="update" parameterType="top.orosirian.orodisk.model.entity.FileEntity">
+        UPDATE file
+        SET user_id = #{userId},
+            parent_id = #{parentId},
+            storage_id = #{storageId},
+            file_name = #{fileName},
+            file_type = #{fileType},
+            file_size = #{fileSize},
+            status = #{status}
+        WHERE file_id = #{fileId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE
+        FROM file
+        WHERE file_id = #{fileId}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE file_id = #{fileId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <select id="selectByUserIdAndParentId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE user_id = #{userId} AND parent_id = #{parentId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY file_type , file_name
+    </select>
+
+    <select id="selectByUserIdAndParentIdWithCursor" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE user_id = #{userId} AND parent_id = #{parentId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="lastFileId != null and lastFileId > 0">
+            AND file_id &gt; #{lastFileId}
+        </if>
+        ORDER BY file_id ASC
+        LIMIT #{pageSize}
+    </select>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE user_id = #{userId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <select id="selectByUserIdAndParentIdAndFileName" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE user_id = #{userId} AND parent_id = #{parentId} AND file_name = #{fileName}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <update id="updateStatus">
+        UPDATE file
+        SET status = #{status}
+        WHERE file_id = #{fileId}
+    </update>
+
+    <update id="updateStatusByParentId">
+        UPDATE file
+        SET status = #{status}
+        WHERE parent_id = #{parentId}
+    </update>
+
+    <update id="updateStorageId">
+        UPDATE file
+        SET storage_id = #{storageId}
+        WHERE file_id = #{fileId}
+    </update>
+
+    <update id="updateParentId">
+        UPDATE file
+        SET parent_id = #{parentId}
+        WHERE file_id = #{fileId}
+    </update>
+
+    <update id="updateFileName">
+        UPDATE file
+        SET file_name = #{fileName}
+        WHERE file_id = #{fileId}
+    </update>
+
+    <select id="selectByStorageId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE storage_id = #{storageId}
+    </select>
+
+    <select id="selectByStorageIdCommon" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE storage_id = #{storageId} AND status = 0
+    </select>
+
+    <delete id="deleteByStorageId">
+        DELETE
+        FROM file
+        WHERE storage_id = #{storageId}
+    </delete>
+
+    <select id="sumFileSizeByUserId" resultType="java.lang.Long">
+        SELECT COALESCE(SUM(file_size), 0)
+        FROM file
+        WHERE user_id = #{userId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <select id="selectRecycleByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE user_id = #{userId} AND status = 2
+        ORDER BY updated_time DESC
+    </select>
+
+    <select id="selectRecycleByUserIdWithCursor" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE user_id = #{userId} AND status = 2
+        <if test="lastFileId != null and lastFileId > 0">
+            AND file_id &gt; #{lastFileId}
+        </if>
+        ORDER BY file_id ASC
+        LIMIT #{pageSize}
+    </select>
+
+    <update id="restoreByFileId">
+        UPDATE file
+        SET status = 0
+        WHERE file_id = #{fileId}
+    </update>
+
+    <delete id="deleteRecycleByUserId">
+        DELETE
+        FROM file
+        WHERE user_id = #{userId} AND status = 2
+    </delete>
+
+    <select id="selectStorageId" resultType="java.lang.Long">
+        SELECT storage_id
+        FROM file
+        WHERE file_id = #{fileId}
+    </select>
+
+    <select id="selectStorageIdsByUserId" resultType="java.lang.Long">
+        SELECT DISTINCT storage_id
+        FROM file
+        WHERE user_id = #{userId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        AND storage_id > 0
+    </select>
+
+</mapper>

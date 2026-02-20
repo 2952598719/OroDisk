@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.orosirian.orodisk.mappers.FileShareMapper">
+
+    <resultMap id="BaseResultMap" type="top.orosirian.orodisk.model.entity.FileShare">
+        <id column="share_id" property="shareId"/>
+        <result column="share_code" property="shareCode"/>
+        <result column="file_id" property="fileId"/>
+        <result column="user_id" property="userId"/>
+        <result column="password" property="password"/>
+        <result column="expire_time" property="expireTime"/>
+        <result column="max_downloads" property="maxDownloads"/>
+        <result column="current_downloads" property="currentDownloads"/>
+        <result column="allow_download" property="allowDownload"/>
+        <result column="status" property="status"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        share_id, share_code, file_id, user_id, password, expire_time, max_downloads, current_downloads, allow_download, status, created_time
+    </sql>
+
+    <insert id="insert" parameterType="top.orosirian.orodisk.model.entity.FileShare" useGeneratedKeys="true" keyProperty="shareId">
+        INSERT INTO file_share (share_code, file_id, user_id, password, expire_time, max_downloads, current_downloads, allow_download, status)
+        VALUES (#{shareCode}, #{fileId}, #{userId}, #{password}, #{expireTime}, #{maxDownloads}, #{currentDownloads}, #{allowDownload}, #{status})
+    </insert>
+
+    <update id="update" parameterType="top.orosirian.orodisk.model.entity.FileShare">
+        UPDATE file_share
+        SET password = #{password},
+            expire_time = #{expireTime},
+            max_downloads = #{maxDownloads},
+            allow_download = #{allowDownload},
+            status = #{status}
+        WHERE share_id = #{shareId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM file_share
+        WHERE share_id = #{shareId}
+    </delete>
+
+    <delete id="deleteByFileId">
+        DELETE FROM file_share
+        WHERE file_id = #{fileId}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file_share
+        WHERE share_id = #{shareId}
+    </select>
+
+    <select id="selectByShareCode" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file_share
+        WHERE share_code = #{shareCode}
+    </select>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file_share
+        WHERE user_id = #{userId}
+        ORDER BY created_time DESC
+    </select>
+
+    <update id="updateStatus">
+        UPDATE file_share
+        SET status = #{status}
+        WHERE share_id = #{shareId}
+    </update>
+
+    <update id="incrementDownloads">
+        UPDATE file_share
+        SET current_downloads = current_downloads + 1
+        WHERE share_id = #{shareId}
+    </update>
+
+</mapper>

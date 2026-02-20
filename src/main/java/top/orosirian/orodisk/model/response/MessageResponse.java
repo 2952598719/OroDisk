@@ -1,0 +1,18 @@
+package top.orosirian.orodisk.model.response;
+
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Data
+public class MessageResponse {
+
+    private Long messageId;
+
+    private String role;
+
+    private String content;
+
+    private LocalDateTime createdTime;
+
+}
