@@ -7,6 +7,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 // npm run build -> dist文件夹传到/opt/OroDisk/
 // mvn install -> target/disk-backend-1.0.0.jar传到/opt/OroDisk/ -> sudo systemctl restart orodisk
+// - [ ] VIP支付
+// - [ ] 微信登录
 @SpringBootApplication
 @MapperScan("top.orosirian.orodisk.mappers")
 @EnableScheduling
