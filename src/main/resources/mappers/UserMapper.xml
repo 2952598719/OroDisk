@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.orosirian.orodisk.mappers.UserMapper">
+
+    <resultMap id="BaseResultMap" type="top.orosirian.orodisk.model.entity.User">
+        <id column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="total_quota" property="totalQuota"/>
+        <result column="used_quota" property="usedQuota"/>
+        <result column="status" property="status"/>
+        <result column="type" property="type"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id, username, password, total_quota, used_quota, status, type, created_time, updated_time
+    </sql>
+
+    <insert id="insert" parameterType="top.orosirian.orodisk.model.entity.User" useGeneratedKeys="true" keyProperty="userId">
+        INSERT
+        INTO user (username, password, total_quota, used_quota, status, type)
+        VALUES (#{username}, #{password}, #{totalQuota}, #{usedQuota}, #{status}, #{type})
+    </insert>
+
+    <update id="update" parameterType="top.orosirian.orodisk.model.entity.User">
+        UPDATE user
+        SET username = #{username},
+            password = #{password},
+            total_quota = #{totalQuota},
+            used_quota = #{usedQuota},
+            status = #{status},
+            type = #{type}
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE
+        FROM user
+        WHERE user_id = #{userId}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE user_id = #{userId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <select id="selectByUsername" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE username = #{username}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+    </select>
+
+    <update id="updateQuota">
+        UPDATE user
+        SET used_quota = #{usedQuota}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="incrementQuota">
+        UPDATE user
+        SET used_quota = used_quota + #{fileSize}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="decrementQuota">
+        UPDATE user
+        SET used_quota = used_quota - #{fileSize}
+        WHERE user_id = #{userId}
+    </update>
+
+    <update id="updateStatus">
+        UPDATE user
+        SET status = #{status}
+        WHERE user_id = #{userId}
+    </update>
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.orosirian.orodisk.mappers.AiConversationMapper">
+
+    <resultMap id="BaseResultMap" type="top.orosirian.orodisk.model.entity.AiConversation">
+        <id column="conversation_id" property="conversationId"/>
+        <result column="user_id" property="userId"/>
+        <result column="title" property="title"/>
+        <result column="context_type" property="contextType"/>
+        <result column="context_id" property="contextId"/>
+        <result column="model_name" property="modelName"/>
+        <result column="status" property="status"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        conversation_id, user_id, title, context_type, context_id, model_name, status, created_time, updated_time
+    </sql>
+
+    <insert id="insert" parameterType="top.orosirian.orodisk.model.entity.AiConversation" useGeneratedKeys="true" keyProperty="conversationId">
+        INSERT INTO ai_conversation (user_id, title, context_type, context_id, model_name, status)
+        VALUES (#{userId}, #{title}, #{contextType}, #{contextId}, #{modelName}, #{status})
+    </insert>
+
+    <update id="update" parameterType="top.orosirian.orodisk.model.entity.AiConversation">
+        UPDATE ai_conversation
+        SET title = #{title},
+            model_name = #{modelName},
+            status = #{status}
+        WHERE conversation_id = #{conversationId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM ai_conversation
+        WHERE conversation_id = #{conversationId}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM ai_conversation
+        WHERE conversation_id = #{conversationId}
+    </select>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM ai_conversation
+        WHERE user_id = #{userId}
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY updated_time DESC
+    </select>
+
+    <update id="updateStatus">
+        UPDATE ai_conversation
+        SET status = #{status}
+        WHERE conversation_id = #{conversationId}
+    </update>
+
+    <update id="updateTitle">
+        UPDATE ai_conversation
+        SET title = #{title}
+        WHERE conversation_id = #{conversationId}
+    </update>
+
+</mapper>

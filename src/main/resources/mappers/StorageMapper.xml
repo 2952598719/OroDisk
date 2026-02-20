@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.orosirian.orodisk.mappers.StorageMapper">
+
+    <resultMap id="BaseResultMap" type="top.orosirian.orodisk.model.entity.Storage">
+        <id column="storage_id" property="storageId"/>
+        <result column="storage_size" property="storageSize"/>
+        <result column="storage_path" property="storagePath"/>
+        <result column="md5" property="md5"/>
+        <result column="ref_count" property="refCount"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        storage_id, storage_size, storage_path, md5, ref_count, created_time, updated_time
+    </sql>
+
+    <insert id="insert" parameterType="top.orosirian.orodisk.model.entity.Storage" useGeneratedKeys="true" keyProperty="storageId">
+        INSERT INTO storage (storage_size, storage_path, md5, ref_count)
+        VALUES (#{storageSize}, #{storagePath}, #{md5}, #{refCount})
+    </insert>
+
+    <update id="update" parameterType="top.orosirian.orodisk.model.entity.Storage">
+        UPDATE storage
+        SET storage_size = #{storageSize},
+            storage_path = #{storagePath},
+            md5 = #{md5},
+            ref_count = #{refCount}
+        WHERE storage_id = #{storageId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE
+        FROM storage
+        WHERE storage_id = #{storageId}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM storage
+        WHERE storage_id = #{storageId}
+    </select>
+
+    <select id="selectByMd5" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM storage
+        WHERE md5 = #{md5}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM storage
+    </select>
+
+    <update id="incrementRefCount">
+        UPDATE storage
+        SET ref_count = ref_count + 1
+        WHERE storage_id = #{storageId}
+    </update>
+
+    <update id="decrementRefCount">
+        UPDATE storage
+        SET ref_count = ref_count - 1
+        WHERE storage_id = #{storageId}
+    </update>
+
+    <select id="selectByRefCountZero" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM storage
+        WHERE ref_count &lt;= 0
+    </select>
+
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.orosirian.orodisk.mappers.FileChunkMapper">
+
+    <resultMap id="BaseResultMap" type="top.orosirian.orodisk.model.entity.FileChunk">
+        <id column="chunk_id" property="chunkId"/>
+        <result column="file_identifier" property="fileIdentifier"/>
+        <result column="chunk_number" property="chunkNumber"/>
+        <result column="chunk_size" property="chunkSize"/>
+        <result column="total_chunks" property="totalChunks"/>
+        <result column="total_size" property="totalSize"/>
+        <result column="storage_path" property="storagePath"/>
+        <result column="user_id" property="userId"/>
+        <result column="created_time" property="createdTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        chunk_id, file_identifier, chunk_number, chunk_size, total_chunks, total_size, storage_path, user_id, created_time
+    </sql>
+
+    <insert id="insert" parameterType="top.orosirian.orodisk.model.entity.FileChunk">
+        INSERT INTO file_chunk (file_identifier, chunk_number, chunk_size, total_chunks, total_size, storage_path, user_id)
+        VALUES (#{fileIdentifier}, #{chunkNumber}, #{chunkSize}, #{totalChunks}, #{totalSize}, #{storagePath}, #{userId})
+    </insert>
+
+    <delete id="deleteByIdentifier">
+        DELETE FROM file_chunk
+        WHERE file_identifier = #{fileIdentifier}
+    </delete>
+
+    <delete id="deleteByIdentifierAndChunkNumber">
+        DELETE FROM file_chunk
+        WHERE file_identifier = #{fileIdentifier} AND chunk_number = #{chunkNumber}
+    </delete>
+
+    <select id="selectByIdentifier" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file_chunk
+        WHERE file_identifier = #{fileIdentifier}
+        ORDER BY chunk_number ASC
+    </select>
+
+    <select id="selectUploadedChunkNumbers" resultType="java.lang.Integer">
+        SELECT chunk_number
+        FROM file_chunk
+        WHERE file_identifier = #{fileIdentifier}
+        ORDER BY chunk_number ASC
+    </select>
+
+    <select id="selectByIdentifierAndChunkNumber" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file_chunk
+        WHERE file_identifier = #{fileIdentifier} AND chunk_number = #{chunkNumber}
+    </select>
+
+    <select id="countByIdentifier" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM file_chunk
+        WHERE file_identifier = #{fileIdentifier}
+    </select>
+
+</mapper>
